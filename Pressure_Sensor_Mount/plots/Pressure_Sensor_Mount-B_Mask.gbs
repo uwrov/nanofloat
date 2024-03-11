@@ -1,0 +1,23 @@
+G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,7.0.10*
+G04 #@! TF.CreationDate,2024-03-10T23:50:27-07:00*
+G04 #@! TF.ProjectId,Pressure_Sensor_Mount,50726573-7375-4726-955f-53656e736f72,rev?*
+G04 #@! TF.SameCoordinates,Original*
+G04 #@! TF.FileFunction,Soldermask,Bot*
+G04 #@! TF.FilePolarity,Negative*
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW 7.0.10) date 2024-03-10 23:50:27*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+%ADD10R,1.700000X1.700000*%
+%ADD11O,1.700000X1.700000*%
+G04 APERTURE END LIST*
+D10*
+X148140000Y-88000000D03*
+D11*
+X145600000Y-88000000D03*
+X143060000Y-88000000D03*
+X140520000Y-88000000D03*
+M02*

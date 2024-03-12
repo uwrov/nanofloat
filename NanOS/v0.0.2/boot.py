@@ -52,6 +52,9 @@ d10.value(0)
 
 #================================================================================================================================================
 #                                                              nanofloat
+
+version = "0.0.2"
+
 def nanofloat():
     
     print("--------------------------------------------------------------------------------")
@@ -68,7 +71,7 @@ def nanofloat():
     print("----                                                                        ----")
     print("----                                                                        ----")
     print("----                                                                        ----")
-    print("----                            NanOS Ver. 0.0.1                            ----")
+    print("----                            NanOS Ver.",version,"                           ----")
     print("----                                                                        ----")
     print("----                  Underwater Remotely Operated Vehicles                 ----")
     print("----                                 at the                                 ----")
@@ -182,8 +185,8 @@ items11 = [menu_item(1,'Acceleration Settings'),
 
 menu11 = menu(items11)
 
-items12 = [menu_item(1,''),
-           menu_item(2,''),
+items12 = [menu_item(1,'Automatic Dive Settings'),
+           menu_item(2,'Adjust Dive Speed'),
            menu_item(3,''),
            menu_item(4,'Return')]
 
@@ -320,7 +323,7 @@ def wlan_menu_stop():
             break
 
 def float_info():
-    print("NanOS Ver. 0.0.1")
+    print("NanOS Ver.",version)
     print("Gen. 1 NanoFloat hardware: Seeed Studio XIAO ESP32C3, flashed with MicroPython")
     print("Micropython v1.22.2 (2024-02-22)")
     print("Dives completed: 0") # IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER

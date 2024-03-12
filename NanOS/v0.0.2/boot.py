@@ -16,9 +16,10 @@ from machine import Pin, I2C, deepsleep
 # Importing WebREPL to interface wirelessly with the controller's WiFi Access Point
 import webrepl
 
-# Importing network and urequests which will allow the controller to start up its own WiFi Access Point
+# Importing network which will allow the controller to start up its own WiFi Access Point
 import network
-import urequests
+
+import webrepl_cfg
 
 import random
 
@@ -243,13 +244,24 @@ items3 = [menu_item(1,'Erase stored data'),
 
 menu3 = menu(items3)
 
-items4 = [menu_item(1,'WebREPL - On (Default)'), 
-            menu_item(2, 'WebREPL - Off'), 
-            menu_item(3, 'WLAN access point - On (Default)'),
-            menu_item(4, 'WLAN access point - Off'),
-            menu_item(5,'Return')]
+items4 = [menu_item(1,'Configure WLAN'),
+          menu_item(2,'Configure WebREPL'),
+          menu_item(3,'Return')]
 
 menu4 = menu(items4)
+
+items41 = [menu_item(1,'Set Network Name'),
+          menu_item(3, 'WLAN access point - On (Default)'),
+          menu_item(4, 'WLAN access point - Off'),
+          menu_item(3,'Return')]
+
+menu41 = menu(items41)
+
+items42 = [menu_item(1,'Set WebREPL Password'),
+          menu_item(2,'Configure WebREPL'),
+          menu_item(3,'Return')]
+
+menu42 = menu(items42)
 
 items_final = [menu_item(1,'Return')]
 

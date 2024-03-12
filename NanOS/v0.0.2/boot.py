@@ -114,17 +114,6 @@ def float_help():
     print("   end_func()        -- Can be used to exit the execution of a file, though the local 'end' function is mostly used.")
 
 #================================================================================================================================================
-#                                                              checkVE
-
-# checkVE stands for Check Valid Entry. It is called during config menu navigation to check if the user input is valid
-
-def checkVE(choice,choiceNum):
-
-    for i in range(choiceNum):
-        if choice == str(i+1):
-            valid = True
-
-#================================================================================================================================================
 #                                                              endFunc
 def end_func():
     print("Type 'end' again to confirm exit.")
@@ -250,16 +239,17 @@ items4 = [menu_item(1,'Configure WLAN'),
 
 menu4 = menu(items4)
 
-items41 = [menu_item(1,'Set Network Name'),
-          menu_item(3, 'WLAN access point - On (Default)'),
-          menu_item(4, 'WLAN access point - Off'),
+items41 = [menu_item(1,'Set Network Name (aka SSID)'),
+          menu_item(3,'WLAN access point - On (Default)'),
+          menu_item(4,'WLAN access point - Off'),
           menu_item(3,'Return')]
 
 menu41 = menu(items41)
 
 items42 = [menu_item(1,'Set WebREPL Password'),
-          menu_item(2,'Configure WebREPL'),
-          menu_item(3,'Return')]
+           menu_item(1,'WebREPL - On (Default)'),
+           menu_item(2,'WebREPL - Off'), 
+           menu_item(3,'Return')]
 
 menu42 = menu(items42)
 
@@ -274,7 +264,7 @@ def placeholder_func():
 def wireless_menu():
     
     print("Changing default wireless settings is not recommended!")
-    print("These settings can be useful for debugging and other applications,")
+    print("These settings can be useful for debugging and customization,")
     print("but tweaking them under normal operational conditions should not be necessary.")
     menu4.show()
 

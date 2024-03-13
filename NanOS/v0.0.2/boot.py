@@ -110,12 +110,24 @@ def float_help():
     print("For detailed help and support, visit https://github.com/uwrov/ or contact us at uwrov@uw.edu")
     print("")
     print("Nanofloat commands:")
+    print("")
     print("   float_help()      -- Get a list of commands and other resources. It seems you know how to use this one!")
-    print("   float_config()    -- Input setup parameters for deployment. Complete this process in advance before each deployment.")
-    print("   dive()            -- Initiate a deployment. Make sure to complete dive_setup() before following through with this command.")
+    print("")
+    print("   float_config()    -- Access all major parameters and functions of the float through a guided cascading menu system.")
+    print("                        The config menu is recommended as the primary way to interact with the float in a streamlined and organized way.")
+    print("                        Note that most, though not all, of the functions available in the config menu are also callable in the terminal.")
+    print("")
+    print("   deploy()          -- Initiate a deployment. Make sure to check deployment parameters before following through.")
+    print("")
     print("   motor_test()      -- Simple test setup for the buoyancy engine. Only use for dry testing.")
     print("                        It also replaces the functionality of a dive sequence in this prototype version.")
+    print("")
+    print("   change_ssid()     -- Input a new network name (aka SSID) for the NanoFloat.")
+    print("                        The SSID is the name of the WiFi network your computer sees when connecting to the NanoFloat.")
+    print("                        NOTE: Available only via wired USB connection. Unavailable wirelessly.")
+    print("")
     print("   end_func()        -- Can be used to exit the execution of a file, though the local 'end' function is mostly used.")
+    print("")
 
 #================================================================================================================================================
 #                                                              endFunc
@@ -270,13 +282,14 @@ def wireless_menu():
     print("but tweaking them under normal operational conditions should not be necessary.")
     menu4.show()
 
-def wifi_name_change():
+def change_ssid():
     
-    if os.dupterm(None):
+    if ap.isconnected():
         
-        print("WARNING: You are connected to the NanoFloat wirelessly. Network name change is only supported via a wired connection.")
+        print("-------")
+        print("WARNING: You are connected to the NanoFloat wirelessly. SSID change is only supported via a wired connection.")
         print("")
-        print("     In order for the network name to be changed, the access point must be deactivated, then reactivated.")
+        print("     In order for the SSID to be changed, the access point must be restarted.")
         print("     Unexpected behavior may occur if the access point is restarted during a wireless connection.")
         print("")
         print("Connect via USB and try again.")
@@ -285,7 +298,7 @@ def wifi_name_change():
     else:
         while True:
 
-            print("Enter the new network name. Type 'end' to quit.")
+            print("Enter the new SSID. Type 'end' to quit.")
 
             new_ssid = input()
 
@@ -293,17 +306,23 @@ def wifi_name_change():
                 break
             
             else:
-                print("Confirm new network name:")
+                print("Confirm new SSID:")
 
                 new_ssid_confirm = input()
  
                 if new_ssid == new_ssid_confirm:
 
                     ap.active(False)
-                    ap.config(ssid = new_ssid)
+                    wlan_file = open("wlan_cfg.py","w")
+                    wlan_file.write("#This file saves the SSID name for reference on boot\n")
+                    wlan_file.close()
+                    wlan_file = open("wlan_cfg.py","a")
+                    wlan_file.write('network_name = "'+new_ssid+'"')
+                    wlan_file.close()
                     ap.active(True)
 
-                    print("SSID successfully changed to '"+new_ssid+"'.")
+                    print("SSID successfully changed to",new_ssid)
+                    print("Restart the NanoFloat to apply the new SSID.")
                     break
 
                 else:
@@ -315,7 +334,7 @@ def webrepl_password_change():
 
     webrepl_cfg_file = open("webrepl_cfg.py", "w")
     webrepl_cfg_file.write("# This file contains the WebREPL password. It is required for secure remote access of the nanofloat.")
-    webrepl_cfg_file.write("PASS =",new_ssid)
+    webrepl_cfg_file.write("PASS =")
     webrepl_cfg_file.close()
 
 def webrepl_menu_start():
@@ -375,11 +394,17 @@ def wlan_menu_stop():
             break
 
 def float_info():
+    print("-------")
     print("NanOS Ver.",version)
     print("Gen. 1 NanoFloat hardware: Seeed Studio XIAO ESP32C3, flashed with MicroPython")
     print("Micropython v1.22.2 (2024-02-22)")
+    print("- - - -")
+    print("Float SSID:",wlan_cfg.network_name)
+    print("IP Address: 192.168.4.1:8266 (Default)")
+    print("- - - -")
     print("Dives completed: 0") # IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER
     print("Dives till next maintenance cycle: 0")#------------- IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER
+    print("- - - -")
     print("Float owner: Remotely Operated Vehicles team at the University of Washington")
     print("Contact uwrov@uw.edu for more information on your specific float.")
     menu_final.show()
@@ -418,7 +443,7 @@ def float_config():
         '0410000000':[menu41.show,items41],
         '0420000000':[menu42.show,items42],
 
-        '0411000000':[wifi_name_change,'0'],
+        '0411000000':[change_ssid,'0'],
         '0412000000':[wlan_menu_start,'0'],
         '0413000000':[wlan_menu_stop,'0'],
 
@@ -518,7 +543,7 @@ def motor_test():
 
 #================================================================================================================================================
 #                                                              dive
-def dive():
+def deploy():
 
     print("-------")
     print("Beginning dive sequence...")

@@ -10,8 +10,12 @@ from time import sleep
 # Impoting sys, it is used in the sys.exit() function within endFunc()
 import sys
 
+import wlan_cfg
+
+import os
+
 # Importing Pin to control GPIOs
-from machine import Pin, I2C, deepsleep
+from machine import Pin, I2C, deepsleep, PWM
 
 # Importing WebREPL to interface wirelessly with the controller's WiFi Access Point
 import webrepl
@@ -19,13 +23,13 @@ import webrepl
 # Importing network which will allow the controller to start up its own WiFi Access Point
 import network
 
-import webrepl_cfg
-
 import random
 
 # Starting up the WiFi Access Point. In this case, the network is set to AP_IF, putting it into access point mode.
 # In other use cases, the network may be set to STA_IF which sets it as a default station which can connect to WiFi.
-network.WLAN(network.AP_IF).active(True)
+ap = network.WLAN(network.AP_IF)
+ap.config(ssid = wlan_cfg.network_name, max_clients = 1)
+ap.active(True)
 
 # Starting up WebREPL access, which sets the password for access and assigns the default IP address to the controller
 # THE PASSWORD IS "nanofloat"
@@ -148,8 +152,6 @@ class menu:
             print(str(f'{self.items[i]}'))
         print('-------')
 
-end_states_dict = {}
-
 items_root = [menu_item(1,'Control Parameters'), 
             menu_item(2,'Sensors'), 
             menu_item(3,'Data/Storage'), 
@@ -240,16 +242,16 @@ items4 = [menu_item(1,'Configure WLAN'),
 menu4 = menu(items4)
 
 items41 = [menu_item(1,'Set Network Name (aka SSID)'),
-          menu_item(3,'WLAN access point - On (Default)'),
-          menu_item(4,'WLAN access point - Off'),
-          menu_item(3,'Return')]
+          menu_item(2,'WLAN access point - On (Default)'),
+          menu_item(3,'WLAN access point - Off'),
+          menu_item(4,'Return')]
 
 menu41 = menu(items41)
 
 items42 = [menu_item(1,'Set WebREPL Password'),
-           menu_item(1,'WebREPL - On (Default)'),
-           menu_item(2,'WebREPL - Off'), 
-           menu_item(3,'Return')]
+           menu_item(2,'WebREPL - On (Default)'),
+           menu_item(3,'WebREPL - Off'), 
+           menu_item(4,'Return')]
 
 menu42 = menu(items42)
 
@@ -267,6 +269,54 @@ def wireless_menu():
     print("These settings can be useful for debugging and customization,")
     print("but tweaking them under normal operational conditions should not be necessary.")
     menu4.show()
+
+def wifi_name_change():
+    
+    if os.dupterm(None):
+        
+        print("WARNING: You are connected to the NanoFloat wirelessly. Network name change is only supported via a wired connection.")
+        print("")
+        print("     In order for the network name to be changed, the access point must be deactivated, then reactivated.")
+        print("     Unexpected behavior may occur if the access point is restarted during a wireless connection.")
+        print("")
+        print("Connect via USB and try again.")
+        menu_final.show()
+
+    else:
+        while True:
+
+            print("Enter the new network name. Type 'end' to quit.")
+
+            new_ssid = input()
+
+            if new_ssid == "end":
+                break
+            
+            else:
+                print("Confirm new network name:")
+
+                new_ssid_confirm = input()
+ 
+                if new_ssid == new_ssid_confirm:
+
+                    ap.active(False)
+                    ap.config(ssid = new_ssid)
+                    ap.active(True)
+
+                    print("SSID successfully changed to '"+new_ssid+"'.")
+                    break
+
+                else:
+                    print("Names do not match. Please try again.")
+                    print("-------")
+
+
+def webrepl_password_change():
+
+    webrepl_cfg_file = open("webrepl_cfg.py", "w")
+    webrepl_cfg_file.write("# This file contains the WebREPL password. It is required for secure remote access of the nanofloat.")
+    webrepl_cfg_file.write("PASS =",new_ssid)
+    webrepl_cfg_file.close()
 
 def webrepl_menu_start():
     
@@ -365,10 +415,16 @@ def float_config():
         '0320000000':[placeholder_func,'0'],
         '0330000000':[placeholder_func,'0'],
 
-        '0410000000':[webrepl_menu_start,'0'],
-        '0420000000':[webrepl_menu_stop,'0'],
-        '0430000000':[wlan_menu_start,'0'],
-        '0440000000':[wlan_menu_stop,'0'],
+        '0410000000':[menu41.show,items41],
+        '0420000000':[menu42.show,items42],
+
+        '0411000000':[wifi_name_change,'0'],
+        '0412000000':[wlan_menu_start,'0'],
+        '0413000000':[wlan_menu_stop,'0'],
+
+        '0421000000':[placeholder_func,'0'],
+        '0422000000':[webrepl_menu_start,'0'],
+        '0423000000':[webrepl_menu_stop,'0'],
 
         '0111000000':[placeholder_func,'0'],
         '0121000000':[placeholder_func,'0'],

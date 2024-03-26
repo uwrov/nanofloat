@@ -12,8 +12,6 @@ import sys
 
 import wlan_cfg
 
-import os
-
 # Importing Pin to control GPIOs
 from machine import Pin, I2C, deepsleep, PWM
 
@@ -332,10 +330,50 @@ def change_ssid():
 
 def webrepl_password_change():
 
-    webrepl_cfg_file = open("webrepl_cfg.py", "w")
-    webrepl_cfg_file.write("# This file contains the WebREPL password. It is required for secure remote access of the nanofloat.")
-    webrepl_cfg_file.write("PASS =")
-    webrepl_cfg_file.close()
+    if ap.isconnected():
+        
+        print("-------")
+        print("WARNING: You are connected to the NanoFloat wirelessly. WebREPL password change is only supported via a wired connection.")
+        print("")
+        print("     In order for the password to be changed, WebREPL must be restarted.")
+        print("     Unexpected behavior may occur if this is done during a wireless connection.")
+        print("")
+        print("Connect via USB and try again.")
+        menu_final.show()
+
+    else:
+        while True:
+
+            print("Enter the new SSID. Type 'end' to quit.")
+
+            new_ssid = input()
+
+            if new_ssid == "end":
+                break
+            
+            else:
+                print("Confirm new SSID:")
+
+                new_ssid_confirm = input()
+ 
+                if new_ssid == new_ssid_confirm:
+
+                    ap.active(False)
+                    wlan_file = open("wlan_cfg.py","w")
+                    wlan_file.write("#This file saves the SSID name for reference on boot\n")
+                    wlan_file.close()
+                    wlan_file = open("wlan_cfg.py","a")
+                    wlan_file.write('network_name = "'+new_ssid+'"')
+                    wlan_file.close()
+                    ap.active(True)
+
+                    print("SSID successfully changed to",new_ssid)
+                    print("Restart the NanoFloat to apply the new SSID.")
+                    break
+
+                else:
+                    print("Names do not match. Please try again.")
+                    print("-------")
 
 def webrepl_menu_start():
     
@@ -435,6 +473,18 @@ def float_config():
         '0210000000':[menu21.show,items21],
         '0220000000':[menu22.show,items22],
         '0230000000':[menu23.show,items23],
+
+        '0211000000':[placeholder_func,'0'],
+        '0212000000':[placeholder_func,'0'],
+        '0213000000':[placeholder_func,'0'],
+
+        '0221000000':[placeholder_func,'0'],
+        '0222000000':[placeholder_func,'0'],
+        '0223000000':[placeholder_func,'0'],
+
+        '0231000000':[placeholder_func,'0'],
+        '0232000000':[placeholder_func,'0'],
+        '0233000000':[placeholder_func,'0'],
 
         '0310000000':[placeholder_func,'0'],
         '0320000000':[placeholder_func,'0'],

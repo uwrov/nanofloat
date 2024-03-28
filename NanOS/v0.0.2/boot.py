@@ -10,9 +10,13 @@ from time import sleep
 # Impoting sys, it is used in the sys.exit() function within endFunc()
 import sys
 
+# Importing the wlan_cfg file, which stores the network name, or SSID
 import wlan_cfg
 
-# Importing Pin to control GPIOs
+# Importing the i2c library for our pressure sensor (this allows the esp32 to understand what it is yapping about)
+import ms5837
+
+# Importing Pin to control GPIOs, I2C to control sensors operating over the i2c serial bus
 from machine import Pin, I2C, deepsleep, PWM
 
 # Importing WebREPL to interface wirelessly with the controller's WiFi Access Point

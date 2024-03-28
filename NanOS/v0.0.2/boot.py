@@ -13,13 +13,17 @@ import sys
 # Importing the wlan_cfg file, which stores the network name, or SSID
 import wlan_cfg
 
-# Importing the i2c library for our pressure sensor (this allows the esp32 to understand what it is yapping about)
+# Importing the i2c library for our pressure sensor (this allows the esp32 to understand what the sensor is yapping about)
 import ms5837
 
-# Importing Pin to control GPIOs, I2C to control sensors operating over the i2c serial bus
+# Importing the following from the esp32's operating system:
+#       - Pin to control GPIOs (turn on and off little wires), 
+#       - I2C to control sensors operating over the i2c serial bus (chit chat with sensors in their own language)
+#       - deepsleep to pu the esp32 to sleep and reduce power consumption (nanofloat is eepy, time for bed)
+#       - PWM to control motor speed (turn on and off little wire really fast = motor go fast or maybe slow, you decide)
 from machine import Pin, I2C, deepsleep, PWM
 
-# Importing WebREPL to interface wirelessly with the controller's WiFi Access Point
+# Importing WebREPL to interface wirelessly with the controller's WiFi Access Point 
 import webrepl
 
 # Importing network which will allow the controller to start up its own WiFi Access Point
@@ -600,70 +604,19 @@ def motor_test():
 def deploy():
 
     print("-------")
-    print("Beginning dive sequence...")
-    print("Type 'end' at any point to exit dive sequence.")
+    print("INITIATING DEPLOYMENT")
+    print("Type 'confirm' to start the first dive. Any other input will cancel the deployment.")
+    print("At any point that the NanoFloat is surfaced and wirelessly connected, call the abort() function to prevent further automatic dives.")
     print("-------")
     
-    while True:
-        
-        while True:
-            print("Enter the dive depth in meters:")
+    conf_dive = input()
 
-            diveDepth = input()
-
-            if diveDepth == 'end':
-                end_func()
-            
-            else:
-                break
-        
-        while True:
-            print("Confirm dive depth:")
-            
-            confirmDiveDepth = input()
-            
-            if confirmDiveDepth == 'end':
-                end_func()
-            
-            else:
-                break
-        
-        if diveDepth != confirmDiveDepth:
-            print("ERROR: Depths do not match.")
-            print("---")
-            
-        else:
-            while True:
-                
-                while True:
-                    print("Press 'Enter' to begin Dive 1.")
-                    
-                    diveStart = input()
-                    
-                    if diveStart == 'end':
-                        end_func()
-                    
-                    else:
-                        break
-                
-                if diveStart == "":
-                    while True:
-                        print("Press 'Enter' again to confirm dive, otherwise type 'cancel'.")
-                        
-                        confirmDiveStart = input()
-                        
-                        if confirmDiveStart == 'end':
-                            end_func()
-                        
-                        else:
-                            break
-                    
-                    if confirmDiveStart == "":
-                        print("Beginning Dive 1, diving to " + diveDepth + " meters.")
-                        print("Be prepared to re-establish wireless connection for Dive 2 initiation.")
-                        break
-                    
-        if diveDepth == confirmDiveDepth:
-            break
+    if conf_dive != "confirm":
+        sys.exit()
     
-    motor_test()
+    print("-------")
+    print("Diving...")
+    print("Prepare to reconnect to the network upon dive completion.")
+    print("-------")
+
+    

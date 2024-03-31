@@ -22,7 +22,7 @@ import ms5837
 #       - I2C to control sensors operating over the i2c serial bus (chit chat with sensors in their own language)
 #       - deepsleep to pu the esp32 to sleep and reduce power consumption (nanofloat is eepy, time for bed)
 #       - PWM to control motor speed (turn on and off little wire really fast = motor go fast or maybe slow, you decide)
-from machine import Pin, I2C, deepsleep
+from machine import Pin, SoftI2C, deepsleep
 
 # Importing WebREPL to interface wirelessly with the controller's WiFi Access Point 
 import webrepl

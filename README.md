@@ -32,6 +32,3 @@ Helpful Links:
 
 >MS5837 Pressure Sensor DigiKey Store Page
 >https://www.digikey.com/en/products/detail/te-connectivity-measurement-specialties/MS583730BA01-50/5629501
-
-
-small change to be deleted

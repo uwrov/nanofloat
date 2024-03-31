@@ -409,7 +409,12 @@ def webrepl_password_change():
                 else:
                     print("Names do not match. Please try again.")
                     print("-------")
-        
+def deep_sleep():
+    print("Ready to sleep in 5")
+    sleep(5)
+    print("How long do you want the machine to deep sleep?")
+    time = input() #ex 10 seconds
+    machine.deepsleep(time * 100) #ex 10000 milisecond
 
 def webrepl_menu_start():
     
@@ -505,6 +510,7 @@ def float_config():
         '0120000000':[menu12.show,items12],
         '0130000000':[menu13.show,items13],
         '0140000000':[menu14.show,items14],
+        '0141000000':[deep_sleep(),items14],
         '0150000000':[menu15.show,items15],
 
         '0210000000':[menu21.show,items21],

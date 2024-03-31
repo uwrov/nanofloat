@@ -10,8 +10,9 @@ from time import sleep
 # Impoting sys, it is used in the sys.exit() function within endFunc()
 import sys
 
-# Importing the wlan_cfg file, which stores the network name, or SSID
+# Importing the WiFi config files, which store the network name, or SSID, and the password
 import wlan_cfg
+import webrepl_cfg
 
 # Importing the i2c library for our pressure sensor (this allows the esp32 to understand what the sensor is yapping about)
 import ms5837
@@ -21,7 +22,7 @@ import ms5837
 #       - I2C to control sensors operating over the i2c serial bus (chit chat with sensors in their own language)
 #       - deepsleep to pu the esp32 to sleep and reduce power consumption (nanofloat is eepy, time for bed)
 #       - PWM to control motor speed (turn on and off little wire really fast = motor go fast or maybe slow, you decide)
-from machine import Pin, I2C, deepsleep, PWM
+from machine import Pin, I2C, deepsleep
 
 # Importing WebREPL to interface wirelessly with the controller's WiFi Access Point 
 import webrepl
@@ -181,11 +182,10 @@ menu_root = menu(items_root)
 
 items1 = [menu_item(1,'Variable Buoyancy Drive'),
           menu_item(2,'Deployment Parameters'),
-          menu_item(3,'Indicator Lights'), 
-          menu_item(4,'Depth Control'), 
-          menu_item(5,'Deep Sleep'),
-          menu_item(6,'Misc Settings'),
-          menu_item(7,'Return')]
+          menu_item(3,'Indicator Lights'),  
+          menu_item(4,'Deep Sleep'),
+          menu_item(5,'Misc Settings'),
+          menu_item(6,'Return')]
 
 menu1 = menu(items1)
 
@@ -197,30 +197,30 @@ menu11 = menu(items11)
 
 items12 = [menu_item(1,'Automatic Dive Settings'),
            menu_item(2,'Adjust Dive Speed'),
-           menu_item(3,''),
-           menu_item(4,'Return')]
+           menu_item(3,'Adjust Profile Depth'),
+           menu_item(4,'Adjust Park Time'),
+           menu_item(5,'Adjust Sampling Frequency'),
+           menu_item(6,'Telemetry Settings'),
+           menu_item(7,'Return')]
 
 menu12 = menu(items12)
 
-items13 = [menu_item(1,'Change Parameter 3'),
-            menu_item(2,'Return')]
+items13 = [menu_item(1,'Toggle Interior Lights'),
+           menu_item(2,'Toggle Exterior Lights'),
+           menu_item(3,'Blink Settings'),
+            menu_item(4,'Return')]
 
 menu13 = menu(items13)
 
-items14 = [menu_item(1,'Change Parameter 4'),
+items14 = [menu_item(1,'Change Deepsleep Timer'),
             menu_item(2,'Return')]
 
 menu14 = menu(items14)
 
-items15 = [menu_item(1,'Change Parameter 5'),
+items15 = [menu_item(1,'Misc'),
             menu_item(2,'Return')]
 
 menu15 = menu(items15)
-
-items16 = [menu_item(1,'Change Parameter 6'),
-            menu_item(2,'Return')]
-
-menu16 = menu(items16)
 
 items2 = [menu_item(1,'Pressure'), 
             menu_item(2, 'Conductivity'), 
@@ -350,14 +350,41 @@ def webrepl_password_change():
         menu_final.show()
 
     else:
+
+        print("- - - Password Change - - -")
+        print("Type 'end' to quit.")
+        print("")
+        
+        for n in range(5):
+
+            print("Enter the old password to continue:")
+
+            while True:
+                
+                old_pass = input()
+
+                if old_pass == 'end':
+                    end_func()
+
+                else:
+                    break
+
+            if old_pass != webrepl_cfg.PASS:
+                print("Incorrect Password")
+                if n == 4:
+                    sys.exit()
+            
+            else:
+                break
+
         while True:
 
-            print("Enter the new SSID. Type 'end' to quit.")
+            print("Enter the new password. Maximum 9 characters.")
 
             new_ssid = input()
 
             if new_ssid == "end":
-                break
+                end_func()
             
             else:
                 print("Confirm new SSID:")
@@ -382,6 +409,7 @@ def webrepl_password_change():
                 else:
                     print("Names do not match. Please try again.")
                     print("-------")
+        
 
 def webrepl_menu_start():
     
@@ -455,6 +483,8 @@ def float_info():
     print("Contact uwrov@uw.edu for more information on your specific float.")
     menu_final.show()
 
+#---------------------------------------------------------------------------------------------------------------------------------
+
 def float_config():
     
     print('-------')
@@ -476,7 +506,6 @@ def float_config():
         '0130000000':[menu13.show,items13],
         '0140000000':[menu14.show,items14],
         '0150000000':[menu15.show,items15],
-        '0160000000':[menu16.show,items16],
 
         '0210000000':[menu21.show,items21],
         '0220000000':[menu22.show,items22],
@@ -511,6 +540,11 @@ def float_config():
 
         '0111000000':[placeholder_func,'0'],
         '0121000000':[placeholder_func,'0'],
+        '0122000000':[placeholder_func,'0'],
+        '0123000000':[placeholder_func,'0'],
+        '0124000000':[placeholder_func,'0'],
+        '0125000000':[placeholder_func,'0'],
+
         '0131000000':[placeholder_func,'0'],
         '0141000000':[placeholder_func,'0'],
         '0151000000':[placeholder_func,'0'],
@@ -601,6 +635,10 @@ def motor_test():
 
 #================================================================================================================================================
 #                                                              dive
+
+def dive():
+    pass
+
 def deploy():
 
     print("-------")
@@ -618,5 +656,9 @@ def deploy():
     print("Diving...")
     print("Prepare to reconnect to the network upon dive completion.")
     print("-------")
+    try:
+        pass
+        
+    except:
+        pass
 
-    

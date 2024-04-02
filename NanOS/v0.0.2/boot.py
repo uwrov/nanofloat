@@ -5,6 +5,7 @@
 # It includes the entire code for the nanofloat, all functions are defined here
 
 # Importing sleep to allow for waiting
+import time
 from time import sleep
 
 # Impoting sys, it is used in the sys.exit() function within endFunc()
@@ -32,6 +33,8 @@ import network
 
 import random
 
+from threading import Thread
+
 # Starting up the WiFi Access Point. In this case, the network is set to AP_IF, putting it into access point mode.
 # In other use cases, the network may be set to STA_IF which sets it as a default station which can connect to WiFi.
 ap = network.WLAN(network.AP_IF)
@@ -41,6 +44,9 @@ ap.active(True)
 # Starting up WebREPL access, which sets the password for access and assigns the default IP address to the controller
 # THE PASSWORD IS "nanofloat"
 webrepl.start()
+
+#================================================================================================================================================
+#                                                           motor_run
 
 # Defining the GPIOs
 d1 = Pin(3, Pin.OUT)
@@ -61,6 +67,9 @@ d5.value(0)
 d6.value(0)
 d7.value(0)
 d10.value(0)
+
+def motor_run(direction):
+    pass
 
 #================================================================================================================================================
 #                                                              nanofloat
@@ -360,7 +369,7 @@ def webrepl_password_change():
             print("Enter the old password to continue:")
 
             while True:
-                
+
                 old_pass = input()
 
                 if old_pass == 'end':
@@ -601,7 +610,7 @@ def float_config():
                 sys.exit()
     
 #================================================================================================================================================
-#                                                              motorTest
+#                                                              motor_test
 def motor_test():
     
     d1.value(0)
@@ -641,10 +650,66 @@ def motor_test():
             print("Stopping Motor...")    
 
 #================================================================================================================================================
+#                                                          sensor_test
+
+def sensor_test():
+    print("-------")
+    print("Beginning pressure sensor test. Connecting to the sensor...")
+    sleep(0.2)
+    print("...")
+    sleep(0.1)
+    print("...")
+    pressure_sensor = ms5837.MS5837()
+
+    pressure_sensor.init()
+
+    if pressure_sensor.init():
+        print("Sensor connection established successfully.")
+        sleep(0.1)
+        print("Beginning sensor test. Type 'samp_c' to begin continuous sampling, or type 'samp_n:x' to sample x times.")
+        print("Type 'end' to quit.")
+
+        while True:
+
+            test_input = input()
+
+            if test_input == 'end':
+                end_func()
+            
+            elif test_input[:-1] == 'samp_n:':
+                for n in range(int(test_input[-1])):
+                    print(pressure_sensor.pressure(ms5837.UNITS_kPa))
+            
+            elif test_input == 'samp_c':
+
+                def constant_readout(run):
+
+                    while run:
+                        
+                        print(pressure_sensor.pressure(ms5837.UNITS_kPa),end='\n',flush=True)
+                        sleep(2)
+                        print('\b',end='',flush=True)
+                        for n in range(len(str(pressure_sensor.pressure(ms5837.UNITS_kPa)))):
+                            print('\b',end='',flush=True)
+
+                def interrupt():
+                    user_input = input()
+                    
+                    if user_input == 'end':
+                        pass
+
+
+    else:
+        print("Sensor connection failed.")
+
+#================================================================================================================================================
 #                                                              dive
 
-def dive():
+def dive(dive_number, dive_depth, parking_time,):
     pass
+
+#================================================================================================================================================
+#                                                              deploy
 
 def deploy():
 
@@ -664,8 +729,10 @@ def deploy():
     print("Prepare to reconnect to the network upon dive completion.")
     print("-------")
     try:
-        pass
+        dive()
         
     except:
-        pass
+        print('Failed to dive. Entering Recovery mode.')
+
+        
 

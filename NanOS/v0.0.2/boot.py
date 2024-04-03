@@ -183,18 +183,18 @@ class menu:
 items_root = [menu_item(1,'Control Parameters'), 
             menu_item(2,'Sensors'), 
             menu_item(3,'Data/Storage'), 
-            menu_item(4,'Wireless'), 
+            menu_item(4,'Wireless'),
             menu_item(5,'Float Info'),
-            menu_item(6,'Exit config menu')]
+            menu_item(6,'Enter Deep Sleep') ,
+            menu_item(7,'Exit config menu')]
 
 menu_root = menu(items_root)
 
 items1 = [menu_item(1,'Variable Buoyancy Drive'),
           menu_item(2,'Deployment Parameters'),
           menu_item(3,'Indicator Lights'),  
-          menu_item(4,'Deep Sleep'),
-          menu_item(5,'Misc Settings'),
-          menu_item(6,'Return')]
+          menu_item(4,'Misc Settings'),
+          menu_item(5,'Return')]
 
 menu1 = menu(items1)
 
@@ -221,15 +221,15 @@ items13 = [menu_item(1,'Toggle Interior Lights'),
 
 menu13 = menu(items13)
 
-items14 = [menu_item(1,'Change Deepsleep Timer'),
-            menu_item(2,'Return')]
-
-menu14 = menu(items14)
-
 items15 = [menu_item(1,'Misc'),
             menu_item(2,'Return')]
 
 menu15 = menu(items15)
+
+items16 = [menu_item(1,''),
+            menu_item(2,'Return')]
+
+menu16 = menu(items15)
 
 items2 = [menu_item(1,'Pressure'), 
             menu_item(2, 'Conductivity'), 
@@ -420,9 +420,7 @@ def webrepl_password_change():
                     print("-------")
 
 def deep_sleep():
-    print("Ready to sleep in 5")
-    sleep(5)
-    print("How long do you want the machine to deep sleep?")
+    print("Enter the deep sleep ")
     time = input() #ex 10 seconds
     machine.deepsleep(time * 100) #ex 10000 milisecond
 

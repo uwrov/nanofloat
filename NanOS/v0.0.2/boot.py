@@ -706,6 +706,22 @@ def sensor_test():
 #                                                              dive
 
 def dive(dive_number, dive_depth, parking_time,):
+    
+    
+    
+    
+    # recall/telemetry part
+    if ap.isconnected:
+        sleep(0.5)
+        
+        print("Type 'stop' to end dive or 'float_config()' to begin another dive" )
+        
+        if user_input == "float_config()":
+            float_config()
+        
+        elif user_input == "stop":
+            end_func()
+        
     pass
 
 #================================================================================================================================================

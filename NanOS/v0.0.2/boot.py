@@ -711,20 +711,36 @@ def dive(dive_number, dive_depth, parking_time,):
     
     # how to use park time and dive depth FROM USER INPUT ABOVE?
     
-    for value in range (1, dive_depth + 1):
+    for depth in range (1, dive_depth + 1):
+        motor_run(extend)
         
-
-    
-    
-    # recall/telemetry part
-    if ap.isconnected:
-        sleep(1.0)
+        if depth == pressure:
+            motor_run(end)
+            
+            sleep(parking_time)
+            
+    for depth in range (dive_depth, -1, -1):
+        motor_run(contract)
+        pressure_sensor.pressure() #idk if this is the right thing to write to make it sample but oh well
+        # add temp sampling
+        # add conductivity sampling
+        # add anything else were using the float to sample
         
-        if user_input == input():
-            float_config()
+        #do I need to put code to run the sensors here or is that for a different function?
         
-        else user_input != input():
-            end_func()
+            if depth == 0:
+            motor_run(end)
+                
+                if ap.isconnected:
+                    sleep(1.0)
+                    Print("someone is connected wirelessly")
+                    
+                    if user_input == input():
+                        float_config()
+                    
+                    else user_input != input():
+                        end_func()
+                
         
     pass
 

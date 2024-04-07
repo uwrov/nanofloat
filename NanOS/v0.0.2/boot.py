@@ -726,8 +726,6 @@ def dive(dive_number, dive_depth, parking_time,):
         # add conductivity sampling
         # add anything else were using the float to sample
         
-        #do I need to put code to run the sensors here or is that for a different function?
-        
             if depth == 0:
             motor_run(end)
                 

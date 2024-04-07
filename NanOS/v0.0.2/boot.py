@@ -704,6 +704,40 @@ def sensor_test():
 #                                                              dive
 
 def dive(dive_number, dive_depth, parking_time,):
+
+    dive_number += 1
+    
+    # how to use park time and dive depth FROM USER INPUT ABOVE?
+    
+    for depth in range (1, dive_depth + 1):
+        motor_run(extend)
+        
+        if depth == pressure:
+            motor_run(end)
+            
+            sleep(parking_time)
+            
+    for depth in range (dive_depth, -1, -1):
+        motor_run(contract)
+        pressure_sensor.pressure() #idk if this is the right thing to write to make it sample but oh well
+        # add temp sampling
+        # add conductivity sampling
+        # add anything else were using the float to sample
+        
+            if depth == 0:
+            motor_run(end)
+                
+                if ap.isconnected:
+                    sleep(1.0)
+                    Print("someone is connected wirelessly")
+                    
+                    if user_input == input():
+                        float_config()
+                    
+                    else user_input != input():
+                        end_func()
+                
+        
     pass
 
 #================================================================================================================================================

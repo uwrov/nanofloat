@@ -396,7 +396,7 @@
     (pin "2" (uuid e35652bc-6255-41c2-ada7-17d0984d48e2))
     (pin "4" (uuid e0b2f44b-bd6f-46dc-83bb-8aa6e1b0971e))
     (instances
-      (project "Pressure_Sensor_Mount"
+      (project "Pressure_Sensor_Mount_v0.2"
         (path "/36745fa6-eaa2-467e-b9f0-5e9a6d81871a"
           (reference "U1") (unit 1)
         )
@@ -424,7 +424,7 @@
     (pin "1" (uuid 9c78d643-04b9-4d2e-bd8a-18affba835a5))
     (pin "2" (uuid 5531cb6f-cc0c-4a24-b797-985cefbce8af))
     (instances
-      (project "Pressure_Sensor_Mount"
+      (project "Pressure_Sensor_Mount_v0.2"
         (path "/36745fa6-eaa2-467e-b9f0-5e9a6d81871a"
           (reference "J1") (unit 1)
         )
@@ -441,7 +441,7 @@
     (property "Value" "0.1 uF" (at 113.03 109.2263 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (at 110.49 107.95 0)
+    (property "Footprint" "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" (at 110.49 107.95 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 110.49 107.95 0)
@@ -450,7 +450,7 @@
     (pin "1" (uuid 0380a6ad-1f66-4770-9186-df778128edc2))
     (pin "2" (uuid 813e00bf-dbd2-44c8-aa66-c12295207f95))
     (instances
-      (project "Pressure_Sensor_Mount"
+      (project "Pressure_Sensor_Mount_v0.2"
         (path "/36745fa6-eaa2-467e-b9f0-5e9a6d81871a"
           (reference "C1") (unit 1)
         )
@@ -464,10 +464,10 @@
     (property "Reference" "R2" (at 101.6 113.03 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "100 kOhm" (at 101.6 115.57 0)
+    (property "Value" "10 kOhm" (at 101.6 115.57 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (at 97.282 114.3 90)
+    (property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal" (at 97.282 114.3 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 99.06 114.3 0)
@@ -476,7 +476,7 @@
     (pin "2" (uuid 74c25860-3560-48bb-8850-0914ab7220d5))
     (pin "1" (uuid 2d79c1dd-fd62-4895-ac76-80d777a64680))
     (instances
-      (project "Pressure_Sensor_Mount"
+      (project "Pressure_Sensor_Mount_v0.2"
         (path "/36745fa6-eaa2-467e-b9f0-5e9a6d81871a"
           (reference "R2") (unit 1)
         )
@@ -490,10 +490,10 @@
     (property "Reference" "R1" (at 115.57 113.03 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "100 kOhm" (at 115.57 115.57 0)
+    (property "Value" "10 kOhm" (at 115.57 115.57 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (at 111.252 114.3 90)
+    (property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal" (at 111.252 114.3 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 113.03 114.3 0)
@@ -502,7 +502,7 @@
     (pin "2" (uuid fa2a5821-08c2-46ba-a7ec-5c03343b0a93))
     (pin "1" (uuid 3338374e-a0bf-4c80-b39c-e1edd93883f6))
     (instances
-      (project "Pressure_Sensor_Mount"
+      (project "Pressure_Sensor_Mount_v0.2"
         (path "/36745fa6-eaa2-467e-b9f0-5e9a6d81871a"
           (reference "R1") (unit 1)
         )

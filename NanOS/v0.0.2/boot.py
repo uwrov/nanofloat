@@ -192,7 +192,7 @@ menu_root = menu(items_root)
 
 items1 = [menu_item(1,'Variable Buoyancy Drive'),
           menu_item(2,'Deployment Parameters'),
-          menu_item(3,'Indicator Lights'),  
+          #menu_item(3,'Indicator Lights'),  
           menu_item(4,'Misc Settings'),
           menu_item(5,'Return')]
 
@@ -209,7 +209,7 @@ items12 = [menu_item(1,'Automatic Dive Settings'),
            menu_item(3,'Adjust Profile Depth'),
            menu_item(4,'Adjust Park Time'),
            menu_item(5,'Adjust Sampling Frequency'),
-           menu_item(6,'Telemetry Settings'),
+           #menu_item(6,'Telemetry Settings'),
            menu_item(7,'Return')]
 
 menu12 = menu(items12)
@@ -221,15 +221,10 @@ items13 = [menu_item(1,'Toggle Interior Lights'),
 
 menu13 = menu(items13)
 
-items15 = [menu_item(1,'Misc'),
+items14 = [menu_item(1,'Misc'),
             menu_item(2,'Return')]
 
-menu15 = menu(items15)
-
-items16 = [menu_item(1,''),
-            menu_item(2,'Return')]
-
-menu16 = menu(items15)
+menu14 = menu(items14)
 
 items2 = [menu_item(1,'Pressure'), 
             menu_item(2, 'Conductivity'), 
@@ -239,20 +234,17 @@ items2 = [menu_item(1,'Pressure'),
 menu2 = menu(items2)
 
 items21 = [menu_item(1,'Calibrate Pressure'),
-           menu_item(2, 'Sensor Info'),
-            menu_item(3,'Return')]
+            menu_item(2,'Return')]
 
 menu21 = menu(items21)
 
 items22 = [menu_item(1,'Calibrate Conductivity'),
-           menu_item(2, 'Sensor Info'),
-            menu_item(3,'Return')]
+            menu_item(2,'Return')]
 
 menu22 = menu(items22)
 
 items23 = [menu_item(1,'Calibrate Temperature'),
-           menu_item(2, 'Sensor Info'),
-            menu_item(3,'Return')]
+            menu_item(2,'Return')]
 
 menu23 = menu(items23)
 
@@ -281,6 +273,19 @@ items42 = [menu_item(1,'Set WebREPL Password'),
            menu_item(4,'Return')]
 
 menu42 = menu(items42)
+
+item5 = [menu_item(1,'General float info'),
+           menu_item(2,'Pressure sensor info'),
+           menu_item(3,'Conductivity sensor info'), 
+           menu_item(4,'Temperature sensor info'),
+           menu_item(5,'Return')]
+
+menu5 = menu(item5)
+
+item6 = [menu_item(1,'Implement deep sleep'),
+            menu_item(2,'Return')]
+
+menu6 = menu(item6)
 
 items_final = [menu_item(1,'Return')]
 
@@ -507,40 +512,80 @@ def float_config():
     menu_dict = {
 
         '0000000000':[menu_root.show,items_root],
+        # 1)Control Parameters
+        # 2)Sensors
+        # 3)Data/Storage
+        # 4)Wireless
+        # 5)Float Info
+        # 6)Enter Deep Sleep
+        # 7)Exist
 
         '0100000000':[menu1.show,items1],
         '0200000000':[menu2.show,items2],
         '0300000000':[menu3.show,items3],
         '0400000000':[wireless_menu,items4],
-        '0500000000':[float_info,items_final],
+        '0500000000':[menu5.show,item5], 
+        '0600000000':[menu6.show,item6],
+        '0700000000':['return',items_final],
 
+        # 1) Variable Buoyancy Drive
+        # 2) Deployment Parameters
+        # 4) Misc Settings
+        # 5) Return
+    
         '0110000000':[menu11.show,items11],
         '0120000000':[menu12.show,items12],
-        '0130000000':[menu13.show,items13],
+        #'0130000000':[menu13.show,items13], # indicator light
         '0140000000':[menu14.show,items14],
-        '0141000000':[deep_sleep(),items14],
-        '0150000000':[menu15.show,items15],
+
+        # 1) Acceleration Settings'),
+        # 2) Calibrate Neutral Buoyancy'),
+        # 3) Return
+        '0111000000':[placeholder_func,'0'],
+        '0112000000':[placeholder_func,'0'],
+        '0113000000':['return',items_final],
+
+        # 1) Automatic Dive Settings
+        # 2) Adjust Dive Speed 
+        # 3) Adjust Profile Depth
+        # 4) Adjust Park Time
+        # 5) Adjust Sampling Frequency
+        # 7) Return
+        '0121000000':[placeholder_func,'0'],
+        '0122000000':[placeholder_func,'0'],
+        '0123000000':[placeholder_func,'0'],
+        '0124000000':[placeholder_func,'0'],
+        '0125000000':[placeholder_func,'0'],
+        '0127000000':['return',items_final],
+
+        #Misc
+        '0131000000':[placeholder_func,'0'],
+
+        #Unused 
+        #'0141000000':[placeholder_func,'0'],
+        #'0151000000':[placeholder_func,'0'],
+        #'0161000000':[placeholder_func,'0'],
 
         '0210000000':[menu21.show,items21],
         '0220000000':[menu22.show,items22],
         '0230000000':[menu23.show,items23],
 
+        # Adjust the info 
         '0211000000':[placeholder_func,'0'],
         '0212000000':[placeholder_func,'0'],
-        '0213000000':[placeholder_func,'0'],
 
         '0221000000':[placeholder_func,'0'],
         '0222000000':[placeholder_func,'0'],
-        '0223000000':[placeholder_func,'0'],
 
         '0231000000':[placeholder_func,'0'],
         '0232000000':[placeholder_func,'0'],
-        '0233000000':[placeholder_func,'0'],
 
+        #Data storage 
         '0310000000':[placeholder_func,'0'],
         '0320000000':[placeholder_func,'0'],
         '0330000000':[placeholder_func,'0'],
 
+        #Wifi
         '0410000000':[menu41.show,items41],
         '0420000000':[menu42.show,items42],
 
@@ -548,25 +593,19 @@ def float_config():
         '0412000000':[wlan_menu_start,'0'],
         '0413000000':[wlan_menu_stop,'0'],
 
+        #Website password 
         '0421000000':[placeholder_func,'0'],
         '0422000000':[webrepl_menu_start,'0'],
         '0423000000':[webrepl_menu_stop,'0'],
 
-        '0111000000':[placeholder_func,'0'],
-        '0121000000':[placeholder_func,'0'],
-        '0122000000':[placeholder_func,'0'],
-        '0123000000':[placeholder_func,'0'],
-        '0124000000':[placeholder_func,'0'],
-        '0125000000':[placeholder_func,'0'],
+        # All info 
+        '0510000000':[float_info(),items_final],
+        '0520000000':[webrepl_menu_start,'0'],
+        '0530000000':[webrepl_menu_stop,'0'],
+        '0540000000':[webrepl_menu_stop,'0'],
 
-        '0131000000':[placeholder_func,'0'],
-        '0141000000':[placeholder_func,'0'],
-        '0151000000':[placeholder_func,'0'],
-        '0161000000':[placeholder_func,'0'],
-
-        '0211000000':[placeholder_func,'0'],
-        '0221000000':[placeholder_func,'0'],
-        '0231000000':[placeholder_func,'0'],
+        #Deep Sleep
+        '0610000000':[deep_sleep(),items_final],
     }
 
     path = [0,0,0,0,0,0,0,0,0,0]
@@ -768,4 +807,3 @@ def deploy():
         print('Failed to dive. Entering Recovery mode.')
 
         
-

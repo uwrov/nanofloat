@@ -573,7 +573,7 @@
 
   (footprint "Sensor_Pressure:TE_MS5837-xxBA" (layer "F.Cu")
     (tstamp e72f3135-7c69-41cf-ae06-724eae500e2f)
-    (at 147.32 91.44)
+    (at 114.3 83.82)
     (descr "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Data+Sheet%7FMS5837-30BA%7FB1%7Fpdf%7FEnglish%7FENG_DS_MS5837-30BA_B1.pdf%7FCAT-BLPS0017")
     (tags "MS5837 Ultra-small gel-filled pressure sensor with stainless steel cap")
     (property "Sheetfile" "Nano-Float_Schematic.kicad_sch")
@@ -631,5 +631,8 @@
 
   (gr_rect (start 76 60.96) (end 101.6 114.3)
     (stroke (width 0.1) (type default)) (fill none) (layer "Edge.Cuts") (tstamp feadbc13-7994-4a44-b8ee-4105f967536b))
+  (gr_text "pressure sensor\n" (at 111.76 88.9) (layer "Edge.Cuts") (tstamp 688cf826-4414-49c2-87bd-f74dcaa668db)
+    (effects (font (size 1 1) (thickness 0.15)) (justify left bottom))
+  )
 
 )

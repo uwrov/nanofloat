@@ -33,8 +33,6 @@ import network
 
 import random
 
-from threading import Thread
-
 # Starting up the WiFi Access Point. In this case, the network is set to AP_IF, putting it into access point mode.
 # In other use cases, the network may be set to STA_IF which sets it as a default station which can connect to WiFi.
 ap = network.WLAN(network.AP_IF)
@@ -52,18 +50,20 @@ webrepl.start()
 d1 = Pin(3, Pin.OUT)
 d2 = Pin(4, Pin.OUT)
 d3 = Pin(5, Pin.OUT)
-d4 = Pin(6, Pin.OUT)
-d5 = Pin(7, Pin.OUT)
 d6 = Pin(21, Pin.OUT)
 d7 = Pin(20, Pin.OUT)
 d10 = Pin(10, Pin.OUT)
+
+sda_pin = 6
+scl_pin = 7
+
+# Initialize the I2C bus
+i2c = SoftI2C(sda=Pin(sda_pin), scl=Pin(scl_pin))
 
 # Setting all GPIOs to pull low initially, ERASE IF NOT NEEDED
 d1.value(0)
 d2.value(0)
 d3.value(0)
-d4.value(0)
-d5.value(0)
 d6.value(0)
 d7.value(0)
 d10.value(0)
@@ -517,8 +517,8 @@ def float_config():
         '0110000000':[menu11.show,items11],
         '0120000000':[menu12.show,items12],
         '0130000000':[menu13.show,items13],
-        '0140000000':[menu14.show,items14],
-        '0141000000':[deep_sleep(),items14],
+        # '0140000000':[menu14.show,items14],
+        # '0141000000':[deep_sleep(),items14],
         '0150000000':[menu15.show,items15],
 
         '0210000000':[menu21.show,items21],

@@ -715,20 +715,40 @@ def motor_run_sequence():
     d2.value(1)
     time.sleep(20)
     
+    #add breaks
+    answer = input("break? type b")
+    if answer == "b":
+        motor_test()
+    
     print("Stopping the motor for 20 second") # heavy
     d1.value(0)
     d2.value(0)
     time.sleep(20) 
+
+    #add breaks
+    answer = input("break? type b")
+    if answer == "b":
+        motor_test()
     
     print("Going up for 20 seconds, go backward") # go up
     d1.value(1)
     d2.value(0)
     time.sleep(20)
+
+    #add breaks
+    answer = input("break? type b")
+    if answer == "b":
+        motor_test()
     
     print("Stopping the motor") #float
     d1.value(0)
     d2.value(0)
     time.sleep(20)
+
+    #add breaks
+    answer = input("break? type b")
+    if answer == "b":
+        motor_test()
 
     print("job well done!") # end
 

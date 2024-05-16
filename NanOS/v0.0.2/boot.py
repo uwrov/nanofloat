@@ -654,7 +654,7 @@ def motor_test():
     d2.value(0)
     
     print("-------")
-    print("Beginning Motor Test. Input either 1, -1, or 0 to run the motor forwards, backwards, or stop, respectively.")
+    print("Beginning Motor Test. Input either 1, -1, 0, p to run the motor forwards, backwards, stop, or combo move respectively.")
     print("Input 'end' to conclude the test.")
     print("-------")
     
@@ -710,47 +710,27 @@ def motor_run_sequence():
     for i in range(10, 0, -1):
         print(f"{i} seconds remaining...")
 
-    print("Sink for 20 seconds, go forward") # sink
+    # sink
     d1.value(0)
     d2.value(1)
     time.sleep(20)
-    
-    #add breaks
-    answer = input("break? type b")
-    if answer == "b":
-        motor_test()
-    
-    print("Stopping the motor for 20 second") # heavy
+     
+    # heavy
     d1.value(0)
     d2.value(0)
     time.sleep(20) 
 
-    #add breaks
-    answer = input("break? type b")
-    if answer == "b":
-        motor_test()
-    
-    print("Going up for 20 seconds, go backward") # go up
+    # go up
     d1.value(1)
     d2.value(0)
     time.sleep(20)
-
-    #add breaks
-    answer = input("break? type b")
-    if answer == "b":
-        motor_test()
     
-    print("Stopping the motor") #float
+    #float
     d1.value(0)
     d2.value(0)
     time.sleep(20)
 
-    #add breaks
-    answer = input("break? type b")
-    if answer == "b":
-        motor_test()
-
-    print("job well done!") # end
+    # end
 
 # Example usage:
 # motor_test()

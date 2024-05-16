@@ -648,8 +648,8 @@ def float_config():
     
 #================================================================================================================================================
 #                                                              motor_test
+
 def motor_test():
-    
     d1.value(0)
     d2.value(0)
     
@@ -659,21 +659,25 @@ def motor_test():
     print("-------")
     
     while True:
-    
-        direction = input()
+        direction = input("Enter direction (1, -1, 0, p, or 'end' to stop): ")
     
         if direction == "end":
             d1.value(0)
             d2.value(0)
-            print("Motor Test Concluded")
+            print("Motor Test End")
             break
     
-        elif direction != "1" and direction != "0" and direction != "-1":
-            print("ERROR: Input either 1, -1, or 0 to run the motor forwards, backwards, or stop, respectively.")
+        elif direction not in ["1", "-1", "0", "p"]:
+            print("ERROR: Input either 1, -1, 0, or p to run the motor forwards, backwards, or stop, respectively.")
+
+        # a combination of all code
+        elif direction == "p":
+            #start sinking
+            motor_run_sequence()
     
         elif direction == "1":
             d1.value(0)
-            d2.value(1)
+            d2.value(1) 
             print("Running Motor Forwards...")
         
         elif direction == "-1":
@@ -684,8 +688,52 @@ def motor_test():
         elif direction == "0":
             d1.value(0)
             d2.value(0)
-            print("Stopping Motor...")    
+            print("Stopping Motor...")
+        
+        # Wait for 10 seconds before asking for input again
+        time.sleep(10)
 
+def motor_run_sequence():
+
+    # surface
+    # sink
+    # heavy
+    # sleep
+    # float
+    # light
+
+    print("Getting ready in 10") # surface
+    d1.value(0)
+    d2.value(0)
+    time.sleep(10)
+    # 10 second count down
+    for i in range(10, 0, -1):
+        print(f"{i} seconds remaining...")
+
+    print("Sink for 20 seconds, go forward") # sink
+    d1.value(0)
+    d2.value(1)
+    time.sleep(20)
+    
+    print("Stopping the motor for 20 second") # heavy
+    d1.value(0)
+    d2.value(0)
+    time.sleep(20) 
+    
+    print("Going up for 20 seconds, go backward") # go up
+    d1.value(1)
+    d2.value(0)
+    time.sleep(20)
+    
+    print("Stopping the motor") #float
+    d1.value(0)
+    d2.value(0)
+    time.sleep(20)
+
+    print("job well done!") # end
+
+# Example usage:
+# motor_test()
 #================================================================================================================================================
 #                                                          sensor_test
 

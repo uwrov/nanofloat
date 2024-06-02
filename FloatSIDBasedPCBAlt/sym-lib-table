@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "113991054")(type "KiCad")(uri "${KIPRJMOD}/seedstudio/113991054.kicad_sym")(options "")(descr ""))
+  (lib (name "PressureSensor")(type "KiCad")(uri "${KIPRJMOD}/Sensor/2024-05-05_17-30-18.kicad_sym")(options "")(descr ""))
+)

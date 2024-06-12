@@ -71,7 +71,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "D:/Coding-Folder/NanoFloat/uwrov-github/nanofloat/FloatSIDBasedPCB/ManufacturingFiles/")
+      (outputdirectory "D:/Coding-Folder/NanoFloat/uwrov-github/nanofloat/NanoBoard/NB002/ManufacturingFiles/")
     )
   )
 

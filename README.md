@@ -3,14 +3,14 @@
 This is the public repository for files and code corresponding to UWROV's NanoFloat.
 
 Helpful Links:
->Micropython Docs
->https://docs.micropython.org/en/latest/esp32/quickref.html
+>[Micropython Docs](https://docs.micropython.org/en/latest/esp32/quickref.html)
 
->WebREPL GitHub
->https://github.com/micropython/webrepl
+>[WebREPL GitHub](https://github.com/micropython/webrepl)
 
->Seeed Studio ESP32C3 Pinout
->https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
+
+>[Seeed Studio ESP32C6 (Latest Version) Pinout](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/)
+
+>[Seeed Studio ESP32C3 Pinout](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/)
 
 >DRV-8833 Motor Driver Pinout and User Guide
 >https://lastminuteengineers.com/drv8833-arduino-tutorial/

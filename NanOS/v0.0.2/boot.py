@@ -5,7 +5,6 @@
 # It includes the entire code for the nanofloat, all functions are defined here
 
 # Importing sleep to allow for waiting
-import time
 from time import sleep
 
 # Impoting sys, it is used in the sys.exit() function within endFunc()
@@ -13,25 +12,20 @@ import sys
 
 # Importing the WiFi config files, which store the network name, or SSID, and the password
 import wlan_cfg
-import webrepl_cfg
 
-# Importing the i2c library for our pressure sensor (this allows the esp32 to understand what the sensor is yapping about)
+# Importing the i2c library for our pressure sensor
 import ms5837
 
 # Importing the following from the esp32's operating system:
-#       - Pin to control GPIOs (turn on and off little wires), 
-#       - I2C to control sensors operating over the i2c serial bus (chit chat with sensors in their own language)
-#       - deepsleep to pu the esp32 to sleep and reduce power consumption (nanofloat is eepy, time for bed)
-#       - PWM to control motor speed (turn on and off little wire really fast = motor go fast or maybe slow, you decide)
-from machine import Pin, SoftI2C, deepsleep
+#       - Pin to control GPIOs
+#       - I2C to control sensors operating over the i2c serial bus
+from machine import Pin, I2C
 
 # Importing WebREPL to interface wirelessly with the controller's WiFi Access Point 
 import webrepl
 
 # Importing network which will allow the controller to start up its own WiFi Access Point
-import network
-
-import random
+import network 
 
 # Starting up the WiFi Access Point. In this case, the network is set to AP_IF, putting it into access point mode.
 # In other use cases, the network may be set to STA_IF which sets it as a default station which can connect to WiFi.
@@ -40,702 +34,112 @@ ap.config(ssid = wlan_cfg.network_name, max_clients = 1)
 ap.active(True)
 
 # Starting up WebREPL access, which sets the password for access and assigns the default IP address to the controller
-# THE PASSWORD IS "nanofloat"
+# Reset the psasword to what you prefer by changing it in the webrepl_cfg.py file, default is "123"
 webrepl.start()
 
-#================================================================================================================================================
-#                                                           motor_run
+# Defining the GPIOs (digital pin numbers do not always align with true GPIO numbers, check Seeed Studio XIAO ESP32C3 datasheet)
 
-# Defining the GPIOs
+# Output pins:
 d1 = Pin(3, Pin.OUT)
 d2 = Pin(4, Pin.OUT)
-d3 = Pin(5, Pin.OUT)
 d6 = Pin(21, Pin.OUT)
 d7 = Pin(20, Pin.OUT)
+d9 = Pin(9, Pin.OUT)
 d10 = Pin(10, Pin.OUT)
+
+# Input pin:
+d3 = Pin(5, Pin.IN, Pin.PULL_DOWN)
+
+# Setting d2 to pull high on boot since it feeds signal through the piston head limit switch, which is then read by input pin 3.
+d2.value(1)
+#================================================================================================================================================
+#                                                           piston_out
+
+def piston_out(runtime = 0):
+    
+    if runtime != 0:
+        print("Confirm: override piston extension limiter? (Y/N)")
+        conf = input()
+        if conf in ["y","Y","yes","Yes"]:
+            d10.value(1)
+            d9.value(0)
+            sleep(runtime)
+
+    else:
+        while d3.value() == 1:
+            d10.value(1)
+            d9.value(0)
+    
+    d10.value(0)
+
+#================================================================================================================================================
+#                                                           piston_in
+
+def piston_in(runtime):
+    d10.value(0)
+    d9.value(1)
+    sleep(runtime)
+    d9.value(0)
+    
+#================================================================================================================================================
+#                                                              motor_test
+def motor_test():
+    
+    d9.value(0)
+    d10.value(0)
+    
+    print("-------")
+    print("Beginning Motor Test. Input either 1, -1, or 0 to run the motor forwards, backwards, or stop, respectively.")
+    print("Input 'end' to conclude the test.")
+    print("-------")
+    
+    while True:
+    
+        direction = input()
+        
+        if direction == "end":
+            d10.value(0)
+            d9.value(0)
+            print("Motor Test Concluded")
+            break
+    
+        elif direction != "1" and direction != "0" and direction != "-1":
+            print("ERROR: Input either 1, -1, or 0 to run the motor forwards, backwards, or stop, respectively.")
+    
+        elif direction == "1":
+            d10.value(1)
+            d9.value(0)
+            print("Running Motor Forwards...")
+        
+        elif direction == "-1":
+            d10.value(0)
+            d9.value(1)
+            print("Running Motor Backwards...")
+        
+        elif direction == "0":
+            d10.value(0)
+            d9.value(0)
+            print("Stopping Motor...")    
+
+#================================================================================================================================================
+#                                                          sensor_test
 
 sda_pin = 6
 scl_pin = 7
 
 # Initialize the I2C bus
-i2c = SoftI2C(sda=Pin(sda_pin), scl=Pin(scl_pin))
+i2c = I2C(sda=Pin(sda_pin), scl=Pin(scl_pin))
 
 # Setting all GPIOs to pull low initially, ERASE IF NOT NEEDED
 d1.value(0)
-d2.value(0)
-d3.value(0)
 d6.value(0)
 d7.value(0)
 d10.value(0)
 
-def motor_run(direction):
-    pass
+# TO DO: Lubricate Actuator Cap, Fix UFL cable, fix strain relief, epoxy seal pressure sensor, 
+# test battery voltage, make pusher piece, software test sensor, limit switch software, ballasting, 
+# empty hull test, make spares or backups where possible, failure mode analysis
 
-#================================================================================================================================================
-#                                                              nanofloat
-
-version = "0.0.2"
-
-def nanofloat():
-    
-    print("--------------------------------------------------------------------------------")
-    print("--------------------------------------------------------------------------------")
-    print("----                                                                        ----")
-    print("----                                                                        ----")
-    print("----      _   _          _   _  ____  ______ _      ____       _______      ----")
-    print("----     | \ | |   /\   | \ | |/ __ \|  ____| |    / __ \   /\|__   __|     ----")
-    print("----     |  \| |  /  \  |  \| | |  | | |__  | |   | |  | | /  \  | |        ----")
-    print("----     | . ` | / /\ \ | . ` | |  | |  __| | |   | |  | |/ /\ \ | |        ----")
-    print("----     | |\  |/ ____ \| |\  | |__| | |    | |___| |__| / ____ \| |        ----")
-    print("----     |_| \_/_/    \_\_| \_|\____/|_|    |______\____/_/    \_\_|        ----")
-    print("----                                                                        ----")
-    print("----                                                                        ----")
-    print("----                                                                        ----")
-    print("----                                                                        ----")
-    print("----                            NanOS Ver.",version,"                           ----")
-    print("----                                                                        ----")
-    print("----                  Underwater Remotely Operated Vehicles                 ----")
-    print("----                                 at the                                 ----")
-    print("----                        University of Washnigton                        ----")
-    print("----                                                                        ----")
-    print("--------------------------------------------------------------------------------")
-    print("--------------------------------------------------------------------------------")
-    print("----                                                                        ----")
-    print("----  Visit us at: https://uwrov.org/                                       ----")
-    print("----  Github: https://github.com/uwrov/                                     ----")
-    print("----  Contact: uwrov@uw.edu                                                 ----")
-    print("----                                                                        ----")
-    print("--------------------------------------------------------------------------------")
-    print("--------------------------------------------------------------------------------")
-    sleep(0.2)
-    print("")
-    print("Connected successfully to 192.168.4.1:8266")
-    print("")
-    sleep(0.2)
-    print("")
-    print("Type 'help()' for MicroPython help.")
-    print("")
-    print("Type 'float_help()' for a list of float commands.")
-
-#================================================================================================================================================
-#                                                              floatHelp
-def float_help():
-    
-    print("NanOS Ver. 0.0.1")
-    print("")
-    print("For detailed help and support, visit https://github.com/uwrov/ or contact us at uwrov@uw.edu")
-    print("")
-    print("Nanofloat commands:")
-    print("")
-    print("   float_help()      -- Get a list of commands and other resources. It seems you know how to use this one!")
-    print("")
-    print("   float_config()    -- Access all major parameters and functions of the float through a guided cascading menu system.")
-    print("                        The config menu is recommended as the primary way to interact with the float in a streamlined and organized way.")
-    print("                        Note that most, though not all, of the functions available in the config menu are also callable in the terminal.")
-    print("")
-    print("   deploy()          -- Initiate a deployment. Make sure to check deployment parameters before following through.")
-    print("")
-    print("   motor_test()      -- Simple test setup for the buoyancy engine. Only use for dry testing.")
-    print("                        It also replaces the functionality of a dive sequence in this prototype version.")
-    print("")
-    print("   change_ssid()     -- Input a new network name (aka SSID) for the NanoFloat.")
-    print("                        The SSID is the name of the WiFi network your computer sees when connecting to the NanoFloat.")
-    print("                        NOTE: Available only via wired USB connection. Unavailable wirelessly.")
-    print("")
-    print("   end_func()        -- Can be used to exit the execution of a file, though the local 'end' function is mostly used.")
-    print("")
-
-#================================================================================================================================================
-#                                                              endFunc
-def end_func():
-    print("Type 'end' again to confirm exit.")
-    print("Otherwise, press the 'Enter' key to continue the dive sequence.")
-        
-    confirmEnd = input()
-    
-    if confirmEnd == 'end':
-        sys.exit()
-
-#================================================================================================================================================
-#                                                              floatConfig
-            
-# This code chunk defines all the config menus and options
-            
-class menu_item:
-    def __init__(self, number, name):
-        self.number = number
-        self.name = name
-
-    def __str__(self):
-        return f'{self.number}. {self.name}'
-    
-class menu:
-    def __init__(self, items):
-        self.items = items
-
-    def show(self):
-        sleep(random.randint(20,150)*0.01)
-        print('-------')
-        for i in range(len(self.items)):
-            print(str(f'{self.items[i]}'))
-        print('-------')
-
-items_root = [menu_item(1,'Control Parameters'), 
-            menu_item(2,'Sensors'), 
-            menu_item(3,'Data/Storage'), 
-            menu_item(4,'Wireless'),
-            menu_item(5,'Float Info'),
-            menu_item(6,'Enter Deep Sleep') ,
-            menu_item(7,'Exit config menu')]
-
-menu_root = menu(items_root)
-
-items1 = [menu_item(1,'Variable Buoyancy Drive'),
-          menu_item(2,'Deployment Parameters'),
-          #menu_item(3,'Indicator Lights'),  
-          menu_item(4,'Misc Settings'),
-          menu_item(5,'Return')]
-
-menu1 = menu(items1)
-
-items11 = [menu_item(1,'Acceleration Settings'),
-           menu_item(2,'Calibrate Neutral Buoyancy'),
-           menu_item(3,'Return')]
-
-menu11 = menu(items11)
-
-items12 = [menu_item(1,'Automatic Dive Settings'),
-           menu_item(2,'Adjust Dive Speed'),
-           menu_item(3,'Adjust Profile Depth'),
-           menu_item(4,'Adjust Park Time'),
-           menu_item(5,'Adjust Sampling Frequency'),
-           #menu_item(6,'Telemetry Settings'),
-           menu_item(7,'Return')]
-
-menu12 = menu(items12)
-
-items13 = [menu_item(1,'Toggle Interior Lights'),
-           menu_item(2,'Toggle Exterior Lights'),
-           menu_item(3,'Blink Settings'),
-            menu_item(4,'Return')]
-
-menu13 = menu(items13)
-
-items14 = [menu_item(1,'Misc'),
-            menu_item(2,'Return')]
-
-menu14 = menu(items14)
-
-items2 = [menu_item(1,'Pressure'), 
-            menu_item(2, 'Conductivity'), 
-            menu_item(3,'Temperature'),
-            menu_item(4,'Return')]
-
-menu2 = menu(items2)
-
-items21 = [menu_item(1,'Calibrate Pressure'),
-            menu_item(2,'Return')]
-
-menu21 = menu(items21)
-
-items22 = [menu_item(1,'Calibrate Conductivity'),
-            menu_item(2,'Return')]
-
-menu22 = menu(items22)
-
-items23 = [menu_item(1,'Calibrate Temperature'),
-            menu_item(2,'Return')]
-
-menu23 = menu(items23)
-
-items3 = [menu_item(1,'Erase stored data'), 
-            menu_item(2, 'Access stored data'), 
-            menu_item(3,'Return')]
-
-menu3 = menu(items3)
-
-items4 = [menu_item(1,'Configure WLAN'),
-          menu_item(2,'Configure WebREPL'),
-          menu_item(3,'Return')]
-
-menu4 = menu(items4)
-
-items41 = [menu_item(1,'Set Network Name (aka SSID)'),
-          menu_item(2,'WLAN access point - On (Default)'),
-          menu_item(3,'WLAN access point - Off'),
-          menu_item(4,'Return')]
-
-menu41 = menu(items41)
-
-items42 = [menu_item(1,'Set WebREPL Password'),
-           menu_item(2,'WebREPL - On (Default)'),
-           menu_item(3,'WebREPL - Off'), 
-           menu_item(4,'Return')]
-
-menu42 = menu(items42)
-
-item5 = [menu_item(1,'General float info'),
-           menu_item(2,'Pressure sensor info'),
-           menu_item(3,'Conductivity sensor info'), 
-           menu_item(4,'Temperature sensor info'),
-           menu_item(5,'Return')]
-
-menu5 = menu(item5)
-
-item6 = [menu_item(1,'Implement deep sleep'),
-            menu_item(2,'Return')]
-
-menu6 = menu(item6)
-
-items_final = [menu_item(1,'Return')]
-
-menu_final = menu(items_final)
-
-def placeholder_func():
-    print("This functionality has not been developed yet. It is coming soon...")
-    menu_final.show()
-
-def wireless_menu():
-    
-    print("Changing default wireless settings is not recommended!")
-    print("These settings can be useful for debugging and customization,")
-    print("but tweaking them under normal operational conditions should not be necessary.")
-    menu4.show()
-
-def change_ssid():
-    
-    if ap.isconnected():
-        
-        print("-------")
-        print("WARNING: You are connected to the NanoFloat wirelessly. SSID change is only supported via a wired connection.")
-        print("")
-        print("     In order for the SSID to be changed, the access point must be restarted.")
-        print("     Unexpected behavior may occur if the access point is restarted during a wireless connection.")
-        print("")
-        print("Connect via USB and try again.")
-        menu_final.show()
-
-    else:
-        while True:
-
-            print("Enter the new SSID. Type 'end' to quit.")
-
-            new_ssid = input()
-
-            if new_ssid == "end":
-                break
-            
-            else:
-                print("Confirm new SSID:")
-
-                new_ssid_confirm = input()
- 
-                if new_ssid == new_ssid_confirm:
-
-                    ap.active(False)
-                    wlan_file = open("wlan_cfg.py","w")
-                    wlan_file.write("#This file saves the SSID name for reference on boot\n")
-                    wlan_file.close()
-                    wlan_file = open("wlan_cfg.py","a")
-                    wlan_file.write('network_name = "'+new_ssid+'"')
-                    wlan_file.close()
-                    ap.active(True)
-
-                    print("SSID successfully changed to",new_ssid)
-                    print("Restart the NanoFloat to apply the new SSID.")
-                    break
-
-                else:
-                    print("Names do not match. Please try again.")
-                    print("-------")
-
-
-def webrepl_password_change():
-
-    if ap.isconnected():
-        
-        print("-------")
-        print("WARNING: You are connected to the NanoFloat wirelessly. WebREPL password change is only supported via a wired connection.")
-        print("")
-        print("     In order for the password to be changed, WebREPL must be restarted.")
-        print("     Unexpected behavior may occur if this is done during a wireless connection.")
-        print("")
-        print("Connect via USB and try again.")
-        menu_final.show()
-
-    else:
-
-        print("- - - Password Change - - -")
-        print("Type 'end' to quit.")
-        print("")
-        
-        for n in range(5):
-
-            print("Enter the old password to continue:")
-
-            while True:
-
-                old_pass = input()
-
-                if old_pass == 'end':
-                    end_func()
-
-                else:
-                    break
-
-            if old_pass != webrepl_cfg.PASS:
-                print("Incorrect Password")
-                if n == 4:
-                    sys.exit()
-            
-            else:
-                break
-
-        while True:
-
-            print("Enter the new password. Maximum 9 characters.")
-
-            new_ssid = input()
-
-            if new_ssid == "end":
-                end_func()
-            
-            else:
-                print("Confirm new SSID:")
-
-                new_ssid_confirm = input()
- 
-                if new_ssid == new_ssid_confirm:
-
-                    ap.active(False)
-                    wlan_file = open("wlan_cfg.py","w")
-                    wlan_file.write("#This file saves the SSID name for reference on boot\n")
-                    wlan_file.close()
-                    wlan_file = open("wlan_cfg.py","a")
-                    wlan_file.write('network_name = "'+new_ssid+'"')
-                    wlan_file.close()
-                    ap.active(True)
-
-                    print("SSID successfully changed to",new_ssid)
-                    print("Restart the NanoFloat to apply the new SSID.")
-                    break
-
-                else:
-                    print("Names do not match. Please try again.")
-                    print("-------")
-
-def deep_sleep():
-    print("Enter the deep sleep ")
-    time = input() #ex 10 seconds
-    machine.deepsleep(time * 100) #ex 10000 milisecond
-
-def webrepl_menu_start():
-    
-    webrepl.start()
-    print("WebREPL Enabled. Connect to the NanoFloat's WiFi Access Point to communicate wirelessly.")
-    print("Access Point IP address: 192.168.4.1:8266")
-    menu_final.show()
-
-def webrepl_menu_stop():
-    
-    while True:
-
-        print("-------")
-        print("CAUTION: Are you sure you want to disable WebREPL? This will prevent wireless connection to the microcontroller.")
-        print("[Y/N]")
-        print("-------")
-
-        yes_no = input()
-
-        if yes_no == "y" or yes_no == "Y":
-            webrepl.stop()
-            print("WebREPL Disabled.")
-            menu_final.show()
-            break
-
-        elif yes_no == "n" or yes_no == "N":
-            menu_final.show()
-            break
-
-def wlan_menu_start():
-
-    network.WLAN(network.AP_IF).active(True)
-    print("WLAN activated. Connect to ESP_00C179 for wireless communications.")
-    print("Access Point IP address: 192.168.4.1:8266")
-    menu_final.show()
-
-def wlan_menu_stop():
-    
-    while True:
-
-        print("-------")
-        print("CAUTION: Are you sure you want to disable WLAN? This will prevent wireless connection to the microcontroller.")
-        print("[Y/N]")
-        print("-------")
-
-        yes_no = input()
-
-        if yes_no == "y" or yes_no == "Y":
-            network.WLAN(network.AP_IF).active(True)
-            print("WLAN Disabled.")
-            menu_final.show()
-            break
-
-        elif yes_no == "n" or yes_no == "N":
-            menu_final.show()
-            break
-
-def float_info():
-    print("-------")
-    print("NanOS Ver.",version)
-    print("Gen. 1 NanoFloat hardware: Seeed Studio XIAO ESP32C3, flashed with MicroPython")
-    print("Micropython v1.22.2 (2024-02-22)")
-    print("- - - -")
-    print("Float SSID:",wlan_cfg.network_name)
-    print("IP Address: 192.168.4.1:8266 (Default)")
-    print("- - - -")
-    print("Dives completed: 0") # IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER
-    print("Dives till next maintenance cycle: 0")#------------- IMPLEMENT LATER ------------- IMPLEMENT LATER ------------- IMPLEMENT LATER
-    print("- - - -")
-    print("Float owner: Remotely Operated Vehicles team at the University of Washington")
-    print("Contact uwrov@uw.edu for more information on your specific float.")
-    menu_final.show()
-
-#---------------------------------------------------------------------------------------------------------------------------------
-
-def float_config():
-    
-    print('-------')
-    print('NanoFloat Configuration Menu')
-    print('Type "end" at any point to quit the config menu.')
-
-    menu_dict = {
-
-        '0000000000':[menu_root.show,items_root],
-        # 1)Control Parameters
-        # 2)Sensors
-        # 3)Data/Storage
-        # 4)Wireless
-        # 5)Float Info
-        # 6)Enter Deep Sleep
-        # 7)Exist
-
-        '0100000000':[menu1.show,items1],
-        '0200000000':[menu2.show,items2],
-        '0300000000':[menu3.show,items3],
-        '0400000000':[wireless_menu,items4],
-        '0500000000':[menu5.show,item5], 
-        '0600000000':[menu6.show,item6],
-        '0700000000':['return',items_final],
-
-        # 1) Variable Buoyancy Drive
-        # 2) Deployment Parameters
-        # 4) Misc Settings
-        # 5) Return
-    
-        '0110000000':[menu11.show,items11],
-        '0120000000':[menu12.show,items12],
-        #'0130000000':[menu13.show,items13], # indicator light
-        '0140000000':[menu14.show,items14],
-
-        # 1) Acceleration Settings'),
-        # 2) Calibrate Neutral Buoyancy'),
-        # 3) Return
-        '0111000000':[placeholder_func,'0'],
-        '0112000000':[placeholder_func,'0'],
-        '0113000000':['return',items_final],
-
-        # 1) Automatic Dive Settings
-        # 2) Adjust Dive Speed 
-        # 3) Adjust Profile Depth
-        # 4) Adjust Park Time
-        # 5) Adjust Sampling Frequency
-        # 7) Return
-        '0121000000':[placeholder_func,'0'],
-        '0122000000':[placeholder_func,'0'],
-        '0123000000':[placeholder_func,'0'],
-        '0124000000':[placeholder_func,'0'],
-        '0125000000':[placeholder_func,'0'],
-        '0127000000':['return',items_final],
-
-        #Misc
-        '0131000000':[placeholder_func,'0'],
-
-        #Unused 
-        #'0141000000':[placeholder_func,'0'],
-        #'0151000000':[placeholder_func,'0'],
-        #'0161000000':[placeholder_func,'0'],
-
-        '0210000000':[menu21.show,items21],
-        '0220000000':[menu22.show,items22],
-        '0230000000':[menu23.show,items23],
-
-        # Adjust the info 
-        '0211000000':[placeholder_func,'0'],
-        '0212000000':[placeholder_func,'0'],
-
-        '0221000000':[placeholder_func,'0'],
-        '0222000000':[placeholder_func,'0'],
-
-        '0231000000':[placeholder_func,'0'],
-        '0232000000':[placeholder_func,'0'],
-
-        #Data storage 
-        '0310000000':[placeholder_func,'0'],
-        '0320000000':[placeholder_func,'0'],
-        '0330000000':[placeholder_func,'0'],
-
-        #Wifi
-        '0410000000':[menu41.show,items41],
-        '0420000000':[menu42.show,items42],
-
-        '0411000000':[change_ssid,'0'],
-        '0412000000':[wlan_menu_start,'0'],
-        '0413000000':[wlan_menu_stop,'0'],
-
-        #Website password 
-        '0421000000':[placeholder_func,'0'],
-        '0422000000':[webrepl_menu_start,'0'],
-        '0423000000':[webrepl_menu_stop,'0'],
-
-        # All info 
-        '0510000000':[float_info(),items_final],
-        '0520000000':[webrepl_menu_start,'0'],
-        '0530000000':[webrepl_menu_stop,'0'],
-        '0540000000':[webrepl_menu_stop,'0'],
-
-        #Deep Sleep
-        '0610000000':[deep_sleep(),items_final],
-    }
-
-    path = [0,0,0,0,0,0,0,0,0,0]
-
-    level = 0
-
-    choice = 0
-
-    while True:
-
-        path_convert = ""
-
-        for i in range(len(path)):
-            path_convert += str(path[i])
-
-        menu_dict[path_convert][0]()
-
-        choice = input()
-
-        valid = False
-
-        for i in range(len(menu_dict[path_convert][1])):
-            if choice == str(i+1):
-                valid = True
-                break
-        
-        if choice == 'end':
-            end_func()
-
-        if valid == True and choice == str(len(menu_dict[path_convert][1])):
-            path[level] = 0
-            level -= 1
-
-        elif valid == True:
-            level += 1
-            path[level] = choice
-
-        if level == -1:
-                sys.exit()
-    
-#================================================================================================================================================
-#                                                              motor_test
-
-def motor_test():
-    d1.value(0)
-    d2.value(0)
-    
-    print("-------")
-    print("Beginning Motor Test. Input either 1, -1, 0, p to run the motor forwards, backwards, stop, or combo move respectively.")
-    print("Input 'end' to conclude the test.")
-    print("-------")
-    
-    while True:
-        direction = input("Enter direction (1, -1, 0, p, or 'end' to stop): ")
-    
-        if direction == "end":
-            d1.value(0)
-            d2.value(0)
-            print("Motor Test End")
-            break
-    
-        elif direction not in ["1", "-1", "0", "p"]:
-            print("ERROR: Input either 1, -1, 0, or p to run the motor forwards, backwards, or stop, respectively.")
-
-        # a combination of all code
-        elif direction == "p":
-            #start sinking
-            motor_run_sequence()
-    
-        elif direction == "1":
-            d1.value(0)
-            d2.value(1) 
-            print("Running Motor Forwards...")
-        
-        elif direction == "-1":
-            d1.value(1)
-            d2.value(0)
-            print("Running Motor Backwards...")
-        
-        elif direction == "0":
-            d1.value(0)
-            d2.value(0)
-            print("Stopping Motor...")
-        
-        # Wait for 10 seconds before asking for input again
-        time.sleep(10)
-
-def motor_run_sequence():
-
-    # surface
-    # sink
-    # heavy
-    # sleep
-    # float
-    # light
-
-    print("Getting ready in 10") # surface
-    d1.value(0)
-    d2.value(0)
-    time.sleep(10)
-    # 10 second count down
-    for i in range(10, 0, -1):
-        print(f"{i} seconds remaining...")
-
-    # sink
-    d1.value(0)
-    d2.value(1)
-    time.sleep(20)
-     
-    # heavy
-    d1.value(0)
-    d2.value(0)
-    time.sleep(20) 
-
-    # go up
-    d1.value(1)
-    d2.value(0)
-    time.sleep(20)
-    
-    #float
-    d1.value(0)
-    d2.value(0)
-    time.sleep(20)
-
-    # end
-
-# Example usage:
-# motor_test()
-#================================================================================================================================================
-#                                                          sensor_test
 
 def sensor_test():
     print("-------")
@@ -744,7 +148,10 @@ def sensor_test():
     print("...")
     sleep(0.1)
     print("...")
-    pressure_sensor = ms5837.MS5837()
+    
+    
+    
+    pressure_sensor = ms5837.MS5837(ms5837.MODEL_30BA, 0)
 
     pressure_sensor.init()
 
@@ -790,42 +197,12 @@ def sensor_test():
 #================================================================================================================================================
 #                                                              dive
 
-# def dive(dive_number, dive_depth, parking_time,):
-
-#     dive_number += 1
+def dive(sleep_time):
     
-#     # how to use park time and dive depth FROM USER INPUT ABOVE?
-    
-#     for depth in range (1, dive_depth + 1):
-#         motor_run(extend)
-        
-#         if depth == pressure:
-#             motor_run(end)
-            
-#             sleep(parking_time)
-            
-#     for depth in range (dive_depth, -1, -1):
-#         motor_run(contract)
-#         pressure_sensor.pressure() #idk if this is the right thing to write to make it sample but oh well
-#         # add temp sampling
-#         # add conductivity sampling
-#         # add anything else were using the float to sample
-        
-#         if depth == 0:
-#             motor_run(end)
-            
-#         if ap.isconnected:
-#             sleep(1.0)
-#             Print("someone is connected wirelessly")
-            
-#             if user_input == input():
-#                 float_config()
-            
-#             else user_input != input():
-#                 end_func()
-                
-        
-#     pass
+    piston_in(58)
+    sleep(sleep_time)
+    piston_out()
+    sleep(sleep_time)
 
 #================================================================================================================================================
 #                                                              deploy
@@ -835,7 +212,7 @@ def deploy():
     print("-------")
     print("INITIATING DEPLOYMENT")
     print("Type 'confirm' to start the first dive. Any other input will cancel the deployment.")
-    print("At any point that the NanoFloat is surfaced and wirelessly connected, call the abort() function to prevent further automatic dives.")
+    print("At any point that the NanoFloat is surfaced and wirelessly connected, pass the 'stop' command to prevent further automatic dives.")
     print("-------")
     
     conf_dive = input()
@@ -847,11 +224,12 @@ def deploy():
     print("Diving...")
     print("Prepare to reconnect to the network upon dive completion.")
     print("-------")
-    try:
-        pass
-        #dive()
-        
-    except:
-        print('Failed to dive. Entering Recovery mode.')
 
-        
+    for n in range(6):
+        try:
+            dive(60) # CHANGE SLEEP TIME ACCORDINGLY
+            
+        except:
+            print('Failed to dive. Entering Recovery mode.')
+            piston_out()
+            sys.exit()

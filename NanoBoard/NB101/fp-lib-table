@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "NanoBoardLibrary")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/NanoBoardLibrary.pretty")(options "")(descr ""))
+  (lib (name "NanoBoardFootprints")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/NanoBoardFootprints.pretty")(options "")(descr ""))
+)

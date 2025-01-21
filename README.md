@@ -1,8 +1,8 @@
 # NanoFloat
 
-This is the public repository for files and code corresponding to UWROV's NanoFloat.
+![alt text](/NanoBoard/NB101/NB101-Screenshot.png)
 
-Helpful Links:
+# Helpful Links:
 >[Micropython Docs](https://docs.micropython.org/en/latest/esp32/quickref.html)
 
 >[WebREPL GitHub](https://github.com/micropython/webrepl)

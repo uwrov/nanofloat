@@ -8,6 +8,6 @@ ESP32C3:
 
 4. esptool --port COM_ erase_flash
 
-5. cd to this directory (D:\Coding-Folder\Projects\Flashing Micropython)
+5. If you cloned the repo, cd to this directory of the directory where you downloaded your flash binary
 
-6. esptool --port COM_ write_flash -z 0x0 ESP32_GENERIC_C3-20240602-v1.23.0.bin
+6. esptool --port COM_ write_flash -z 0x0 

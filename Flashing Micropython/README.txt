@@ -10,4 +10,4 @@ ESP32C3:
 
 5. If you cloned the repo, cd to this directory of the directory where you downloaded your flash binary
 
-6. esptool --port COM_ write_flash -z 0x0 
+6. esptool --port COM_ write_flash -z 0x0 ESP32C6-MicroPython.bin

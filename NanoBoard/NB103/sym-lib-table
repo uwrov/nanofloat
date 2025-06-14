@@ -1,0 +1,8 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "2024-04-14_06-28-37")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/2024-04-14_06-28-37.kicad_sym")(options "")(descr ""))
+  (lib (name "102010388")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/102010388.kicad_sym")(options "")(descr ""))
+  (lib (name "Sensor_Pressure_float")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/Sensor_Pressure_float.kicad_sym")(options "")(descr ""))
+  (lib (name "ESE-22MV21T")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/ESE-22MV21T.kicad_sym")(options "")(descr ""))
+  (lib (name "DRV8833")(type "KiCad")(uri "D:/Coding-Folder/Projects/NanoFloat/uwrov-github/nanofloat/NanoBoard_Libraries/NanoBoardSymbols/DRV8833.kicad_sym")(options "")(descr ""))
+)
